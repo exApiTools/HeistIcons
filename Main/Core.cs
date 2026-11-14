@@ -109,8 +109,15 @@ namespace HeistIcons.Main
 
             k = Camera.Width < 1024f ? 1120f : 1024f;
             scale = k / Camera.Height * Camera.Width * 3.06f / 4f / MapWindow.LargeMapZoom;
-            playerPos = GameController.Player.GetComponent<Positioned>().GridPos;
-            playerPosZ = GameController.Player.GetComponent<Render>().Pos.Z;
+            // During area changes this background tick can run while the player entity is only partly loaded.
+            var player = GameController.Player;
+            var playerPositioned = player?.GetComponent<Positioned>();
+            var playerRender = player?.GetComponent<Render>();
+            if (playerPositioned == null || playerRender == null)
+                return;
+
+            playerPos = playerPositioned.GridPos;
+            playerPosZ = playerRender.Pos.Z;
 
             while (EntityAddedQueue.Count > 0)
             {
